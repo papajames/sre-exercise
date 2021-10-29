@@ -1,13 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
+using SreExercise.Web.Middlewares;
+using SreExercise.Web.Models.Data;
 
 namespace SreExercise.Web
 {
@@ -20,37 +17,65 @@ namespace SreExercise.Web
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<EmployeeDal, EmployeeDal>();
+
             services.AddControllersWithViews();
+
+            services.AddSwaggerGen(config =>
+            {
+                config.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "SRE Exercise API",
+                    Version = "v1"
+                });
+
+                config.AddSecurityDefinition(ApiKeyAuthMiddleware.HeaderName, new OpenApiSecurityScheme
+                {
+                    Description = "You have to access with API Key.",
+                    In = ParameterLocation.Header,
+                    Name = ApiKeyAuthMiddleware.HeaderName,
+                    Type = SecuritySchemeType.ApiKey
+                });
+
+                config.AddSecurityRequirement(new OpenApiSecurityRequirement {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Name = ApiKeyAuthMiddleware.HeaderName,
+                            Type = SecuritySchemeType.ApiKey,
+                            In = ParameterLocation.Header,
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = ApiKeyAuthMiddleware.HeaderName
+                            }
+                        },
+                        new string[]{}
+                    }
+                });
+            });
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
-            app.UseHttpsRedirection();
+            app.UseDeveloperExceptionPage();
+
             app.UseStaticFiles();
+
+            app.UseSwagger();
+
+            app.UseSwaggerUI();
+
+            app.UseMiddleware<ApiKeyAuthMiddleware>();
 
             app.UseRouting();
 
-            app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapControllers();
+                endpoints.MapDefaultControllerRoute();
             });
         }
     }
