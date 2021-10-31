@@ -11,7 +11,7 @@
 Open the terminal and run the following command:
 
 ```bash
-docker-compose up
+docker-compose up --build --detach
 ```
 
 Open another terminal and validate the container instances with the following command:
@@ -21,6 +21,12 @@ docker ps --format '{{.Names}}'
 sre-exercise-web-1
 sre-exercise-app-1
 sre-exercise-mysql-1
+```
+
+You can shutdown the exercise with the following command:
+
+```bash
+docker-compose down --rmi local
 ```
 
 ### Create admin user to MySQL
