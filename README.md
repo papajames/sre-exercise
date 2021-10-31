@@ -14,7 +14,7 @@ Open the terminal and run the following command:
 docker-compose up --build --detach
 ```
 
-Open another terminal and validate the container instances with the following command:
+Validate the container instances with the following command:
 
 ```bash
 docker ps --format '{{.Names}}'
