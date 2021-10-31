@@ -108,8 +108,12 @@ The RESTful API Server used the API Key to authenticate the access, you can pass
 
 ## Backup the database with the requirement
 
-Run the script with the following arguments:
+The usage of the backup script:
 
 ```bash
+# usage
 db-scripts/db-backup.sh <host> <username> <password> <output-dir>
+
+# example
+db-scripts/db-backup.sh 127.0.0.1 admin 123456 backup/
 ```
