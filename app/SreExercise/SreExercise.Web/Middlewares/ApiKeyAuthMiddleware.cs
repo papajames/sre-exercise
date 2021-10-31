@@ -33,8 +33,9 @@ namespace SreExercise.Web.Middlewares
 
         public async Task InvokeAsync(HttpContext context)
         {
+            var requestPath = context.Request.Path;
             var apiKeys = context.Request.Headers[HeaderName];
-            if(!apiKeys.Contains(_apiKey))
+            if(requestPath.Value.StartsWith("/api") && !apiKeys.Contains(_apiKey))
             {
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                 return;
