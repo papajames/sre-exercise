@@ -1,0 +1,22 @@
+version: "3.9"
+
+services:
+  web:
+    build: web/.
+    ports:
+      - "80:80"
+    depends_on:
+      - app
+  app:
+    build: app/.
+    environment:
+      ASPNETCORE_URLS: "http://*:5000"
+      ASPNETCORE_ENVIRONMENT: "Production"
+    depends_on:
+      - mysql
+  mysql:
+    image: mysql/mysql-server:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+    ports:
+      - "3306:3306"

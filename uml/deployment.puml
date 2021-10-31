@@ -1,0 +1,19 @@
+@startuml
+
+skinparam RoundCorner 15
+
+actor "User" as user
+rectangle "docker host" as host {
+    node "Web (nginx)" as web
+    node "APP (ASP.NET Core)" as app
+    node "DB (MySQL)" as mysql
+}
+
+user -> host : Access HTTP via host port 80
+user -> host : Access DB via host port 3306
+host -> web : 80:80
+host -> mysql : 3306:3306
+web -> app : app:5000
+app -> mysql : mysql:3306
+
+@enduml
